@@ -1,0 +1,39 @@
+name: Publish signed Windows update
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Four-part Windows version
+        required: true
+        type: string
+      sha256:
+        description: SHA-256 of candidate.zip
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: stable-windows-publishing
+  cancel-in-progress: false
+jobs:
+  sign-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Read trusted publisher source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          gh api "repos/$REPO/contents/sign-release.mjs?ref=$SOURCE_SHA" --jq .content | base64 --decode > sign-release.mjs
+          gh api "repos/$REPO/contents/pack-update.py?ref=$SOURCE_SHA" --jq .content | base64 --decode > pack-update.py
+          gh api "repos/$REPO/contents/release-channel.json?ref=$SOURCE_SHA" --jq .content | base64 --decode > release-channel.json
+      - name: Verify, sign and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_REPOSITORY: ${{ github.repository }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          CANDIDATE_SHA256: ${{ inputs.sha256 }}
+          YUEXING_UPDATE_PRIVATE_KEY: ${{ secrets.YUEXING_UPDATE_PRIVATE_KEY }}
+        run: node sign-release.mjs

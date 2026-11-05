@@ -1,0 +1,7 @@
+{
+  "contract": "YUEXING_ONLINE_UPDATE_CONFIG_V1",
+  "channel": "stable",
+  "feedUrl": "https://github.com/bin131040-a11y/yuexing-windows-releases/releases/latest/download/appcast.xml",
+  "publicKey": "MNV2cGKUeNkB7Kesa99bC7qsMe60cTiw/iZ5BdNB+ng=",
+  "repository": "bin131040-a11y/yuexing-windows-releases"
+}
