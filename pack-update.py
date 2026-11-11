@@ -34,6 +34,9 @@ elif mode == 'zip':
         base = Path(source)
         for item in sorted(base.rglob('*')):
             if item.is_symlink(): raise ValueError('Linked release file')
-            if item.is_file(): archive.write(item, item.relative_to(base).as_posix())
+            if item.is_file():
+                name = item.relative_to(base).as_posix()
+                if (base / 'signed-update.json').exists() and name in ('bundle/web-update.json', 'bundle/bundle-reuse.json'): continue
+                archive.write(item, name)
 else:
     raise ValueError('Unknown mode')

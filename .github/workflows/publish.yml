@@ -29,6 +29,7 @@ jobs:
         run: |
           gh api "repos/$REPO/contents/sign-release.mjs?ref=$SOURCE_SHA" --jq .content | base64 --decode > sign-release.mjs
           gh api "repos/$REPO/contents/pack-update.py?ref=$SOURCE_SHA" --jq .content | base64 --decode > pack-update.py
+          gh api "repos/$REPO/contents/prepare-signed-update.mjs?ref=$SOURCE_SHA" --jq .content | base64 --decode > prepare-signed-update.mjs
           gh api "repos/$REPO/contents/release-channel.json?ref=$SOURCE_SHA" --jq .content | base64 --decode > release-channel.json
       - name: Verify, sign and publish
         env:
